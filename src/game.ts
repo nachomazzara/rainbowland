@@ -36,6 +36,10 @@ function colourNameToHex(colour)
     return false;
 }
 
+function getRandom(num) {
+  return Math.max(Math.random() * num, 1)
+}
+
 @Component('lerpData')
 export class LerpData {
   oldPos: Vector3 = Vector3.Zero()
@@ -50,11 +54,9 @@ export class LerpData {
   }
 }
 
-
 class RotatorSystem {
   // this group will contain every entity that has a Transform component
   group = engine.getComponentGroup(Transform)
-  // engine.getComponentGroup(LerpData)
 
 
   update(dt: number) {
@@ -73,14 +75,14 @@ class RotatorSystem {
         } else if (lerp.pause > 0) {
           lerp.pause -= 3
         } else {
-          log("new position")
           lerp.oldPos = transform.position
           // new random position
-          lerp.nextPos.x = Math.random() * 10
-          lerp.nextPos.y = (Math.random() * 3) + 1
-          lerp.nextPos.z = Math.random() * 10
+          lerp.nextPos.x = getRandom(9)
+          lerp.nextPos.y = getRandom(9)
+          lerp.nextPos.z = getRandom(9)
           lerp.fraction = 0
           lerp.pause = Math.random() * 500
+
           // face new position
           transform.lookAt(lerp.nextPos)
         }
@@ -105,14 +107,9 @@ executeTask(async () => {
   const colors = []
   for (let i = 0; i < totalSupply; i++) {
     const color = await rainbow.getColor(i)
-    // if (isInvalidColor(normalizedColor)) {
-    //   continue
-    // }
 
-    spawnCube(5, 1, 5, color.replace(';', ''))
+    spawnCube(5, 9, 5, color.replace(';', ''))
   }
-
-  // console.log(colors)
 })
 
 // Add a new instance of the system to the engine
@@ -133,9 +130,14 @@ function spawnCube(x: number, y: number, z: number, color: string) {
   // set a transform to the entity
   cube.set(new Transform({ position: new Vector3(x, y, z) }))
 
+  // define the box
+  const box =  new BoxShape()
+  box.withCollisions = true
+
   // set a shape to the entity
-  cube.set(new BoxShape())
-  // console.log(Color3.FromHexString(`#${intToRGB(hashCode(color))}`))
+  cube.set(box)
+
+
   const myMaterial = new Material()
 
   const cubeColor = Color3.FromHexString(colorHexa)
@@ -143,9 +145,8 @@ function spawnCube(x: number, y: number, z: number, color: string) {
   myMaterial.albedoColor = cubeColor
 
   cube.add(myMaterial)
-  const startPosition = new Vector3(4, 2, 8)
-  const nextPos = new Vector3(Math.random() * 10 ,Math.random() * 5 ,Math.random() * 10)
-
+  const startPosition = new Vector3(x, y, z)
+  const nextPos = new Vector3(getRandom(9), getRandom(9), getRandom(9))
   cube.add(new LerpData(startPosition, nextPos, 0, 200))
 
   cube.get(Transform).lookAt(nextPos)
@@ -155,16 +156,3 @@ function spawnCube(x: number, y: number, z: number, color: string) {
 
   return cube
 }
-
-/// --- Spawn a cube ---
-
-// const cube = spawnCube(5, 1, 5)
-
-// cube.set(
-//   new OnClick(() => {
-//     cube.get(Transform).scale.z *= 1.1
-//     cube.get(Transform).scale.x *= 0.9
-
-//     spawnCube(Math.random() * 8 + 1, Math.random() * 8, Math.random() * 8 + 1)
-//   })
-// )
