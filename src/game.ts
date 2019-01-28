@@ -1,5 +1,6 @@
 import { getProvider } from '@decentraland/web3-provider'
 import * as EthConnect from '../node_modules/eth-connect/esm'
+import { querySceneLimits } from '@decentraland/EntityController'
 
 import abi from './rainbow'
 
@@ -23,7 +24,7 @@ function colourNameToHex(colour)
     "navajowhite":"#ffdead","navy":"#000080",
     "oldlace":"#fdf5e6","olive":"#808000","olivedrab":"#6b8e23","orange":"#ffa500","orangered":"#ff4500","orchid":"#da70d6",
     "palegoldenrod":"#eee8aa","palegreen":"#98fb98","paleturquoise":"#afeeee","palevioletred":"#d87093","papayawhip":"#ffefd5","peachpuff":"#ffdab9","peru":"#cd853f","pink":"#ffc0cb","plum":"#dda0dd","powderblue":"#b0e0e6","purple":"#800080",
-    "rebeccapurple":"#663399","red":"#ff0000","rosybrown":"#bc8f8f","royalblue":"#4169e1",
+    "rebeccapurple":"#663199","red":"#ff0000","rosybrown":"#bc8f8f","royalblue":"#4169e1",
     "saddlebrown":"#8b4513","salmon":"#fa8072","sandybrown":"#f4a460","seagreen":"#2e8b57","seashell":"#fff5ee","sienna":"#a0522d","silver":"#c0c0c0","skyblue":"#87ceeb","slateblue":"#6a5acd","slategray":"#708090","snow":"#fffafa","springgreen":"#00ff7f","steelblue":"#4682b4",
     "tan":"#d2b48c","teal":"#008080","thistle":"#d8bfd8","tomato":"#ff6347","turquoise":"#40e0d0",
     "violet":"#ee82ee",
@@ -77,9 +78,9 @@ class RotatorSystem {
         } else {
           lerp.oldPos = transform.position
           // new random position
-          lerp.nextPos.x = getRandom(9)
-          lerp.nextPos.y = getRandom(9)
-          lerp.nextPos.z = getRandom(9)
+          lerp.nextPos.x = getRandom(19)
+          lerp.nextPos.y = getRandom(11)
+          lerp.nextPos.z = getRandom(19)
           lerp.fraction = 0
           lerp.pause = Math.random() * 500
 
@@ -92,6 +93,9 @@ class RotatorSystem {
 }
 
 executeTask(async () => {
+  // Get limits
+  const limits = await querySceneLimits()
+
   // create an instance of the web3 provider to interface with Metamask
   const provider = await getProvider()
   // Create the object that will handle the sending and receiving of RPC messages
@@ -105,7 +109,7 @@ executeTask(async () => {
 
   const totalSupply = await rainbow.totalSupply()
   const colors = []
-  for (let i = 0; i < totalSupply; i++) {
+  for (let i = 0; i < Math.min(totalSupply, limits.materials); i++) {
     const color = await rainbow.getColor(i)
 
     spawnCube(5, 9, 5, color.replace(';', ''))
@@ -146,7 +150,7 @@ function spawnCube(x: number, y: number, z: number, color: string) {
 
   cube.add(myMaterial)
   const startPosition = new Vector3(x, y, z)
-  const nextPos = new Vector3(getRandom(9), getRandom(9), getRandom(9))
+  const nextPos = new Vector3(getRandom(19), getRandom(11), getRandom(19))
   cube.add(new LerpData(startPosition, nextPos, 0, 200))
 
   cube.get(Transform).lookAt(nextPos)
