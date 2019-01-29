@@ -1,8 +1,10 @@
-# - ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) `ONLY ROPSTEN NETWORK!!!!!`
+# ONLY ROPSTEN NETWORK!!!!!
 
 # Rainbowland
 
-See the cube rain of the color tokens created [here]()
+Let's [explore](https://rainbowland-master2-wmqhlotrjk.now.sh) the scene
+
+If you want to add your own color cube to the amazing rain, go [here](https://rainbox.now.sh/new)
 
 ## References
 
